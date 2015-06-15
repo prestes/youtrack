@@ -11,21 +11,19 @@ $basePath = '../import/';
 
 $files = scandir($basePath, SCANDIR_SORT_DESCENDING);
 
-$file = $files[0];
+$storyId = $files[0];
 
-var_dump($files);exit;
-
-$issue = $youtrack->getIssue($file);
+$issue = $youtrack->getIssue($storyId);
 $fixVersion = $issue->getFixVersion();
 
-$tasks = file($basePath . $file);
+$tasks = file($basePath . $storyId);
 
 $toCreate = [];
 
 foreach ($tasks as $task) {
-	preg_match("/^\[(\d+)\] (.+)$/", $task, $data);
+	preg_match("/^- (.+)$/", $task, $data);
 
-	if (count($data) != 3) {
+	if (count($data) != 2) {
 		echo "Couldn't parse: " . $task;
 		echo "Nothing was created\n";
 		exit;
@@ -34,16 +32,18 @@ foreach ($tasks as $task) {
 	$params = array(
 	    'priority' => 'Normal',
 	    'type' => 'Task',
-	    'estimation' => $data[1],
-	    'title' => $data[2],
+	    // 'estimation' => $data[1],
+	    'title' => $data[1],
 	);
 
 	$toCreate[] = $params;
 }
 
+var_dump($toCreate);exit;
+
 foreach ($toCreate as $index => $task) {
-	$issue = $youtrack->createIssue('W', $task['title'], $params);
-	$youtrack->createChildLink($file, $issue->getId());
+	$issue = $youtrack->createIssue(YOUTRACK_PROJECT, $task['title'], $params);
+	$youtrack->createChildLink($storyId, $issue->getId());
 	$youtrack->executeCommand($issue->getId(), 'Estimation ' . $task['estimation'] . 'h');
 
 	if (!is_null($fixVersion)) {
