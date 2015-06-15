@@ -1,0 +1,4 @@
+Add a file in this folder with the name as the id of the story (e.g. W-1234) and the task list in the format:
+- Do stuff
+- Deploy
+- etc...
