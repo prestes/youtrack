@@ -559,6 +559,18 @@ class Connection
         throw new NotImplementedException("import_links(links)");
     }
 
+    /**
+     * @param string $mainTaskId
+     * @param string $subTaskId
+     */
+    public function createChildLink($mainTaskId, $subTaskId)
+    {
+        $xml = "<list>\n";
+        $xml .= '<link typeName="subtask" source="' . $mainTaskId .'" target="' . $subTaskId .'"/>';
+        $xml .= "</list>";
+        $this->requestXml('PUT', '/import/links', $xml, 400);
+    }
+
     public function importIssues($project_id, $assignee_group, $issues)
     {
         throw new NotImplementedException("import_issues(project_id, assignee_group, issues)");
