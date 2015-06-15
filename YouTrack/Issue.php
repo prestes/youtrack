@@ -131,4 +131,12 @@ class Issue extends Object
         }
         return $this->links;
     }
+
+    /**
+     * @return string
+     */
+    public function getFixVersion()
+    {
+        return $this->__get('Fix versions');
+    }
 }
