@@ -1,0 +1,7 @@
+<?php
+// rename this file to .auth.php
+define('YOUTRACK_URL', 'https://werkspot.myjetbrains.com/youtrack');
+define('YOUTRACK_USERNAME', 'fakeuser@werkspot.nl');
+define('YOUTRACK_PASSWORD', 'your_pass_I_know_its_lame');
+define('YOUTRACK_PROJECT', 'W (for dutch) or WS (for international)');
+
