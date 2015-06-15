@@ -112,4 +112,51 @@ class AttachmentsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedResult, $result);
     }
+
+    public function createAttachmentProvider()
+    {
+        $createdDateTime = new \DateTime();
+
+        return array(
+            // name, authorLogin, created, group, expectedParams
+            array('', '', null, '', array()),
+            array('file.txt', '', null, '', array('name' => 'file.txt')),
+            array('', 'authorX', null, '', array('authorLogin' => 'authorX')),
+            array('', '', $createdDateTime, '', array('created' => $createdDateTime->getTimestamp() * 1000)),
+            array('', '', null, 'groupX', array('group' => 'groupX'))
+        );
+    }
+
+    /**
+     * @dataProvider createAttachmentProvider
+     */
+    public function testCreateAttachment($name, $authorLogin, $created, $group, $params)
+    {
+        $attachmentFilename = __DIR__ . '/testdata/attachment.xml';
+        $issueId = 'TEST-123';
+        $expectedUrl = '/issue/' . rawurlencode($issueId) . '/attachment?' . http_build_query($params);
+        $expectedResult = 'myResponseValue';
+
+        $youtrack = $this->getMock('\\YouTrack\\TestConnection', array('request'));
+
+        $youtrack->expects($this->once())
+            ->method('request')
+            ->with('POST', $expectedUrl, $attachmentFilename)
+            ->will($this->returnValue($expectedResult));
+
+        /** @var \YouTrack\Connection $youtrack */
+        $result = $youtrack->createAttachment($issueId, $attachmentFilename, $name, $authorLogin, $created, $group);
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testCreateAttachmentThrowsExceptionOnNonExistingFile()
+    {
+        $youtrack = $this->getMock('\\YouTrack\\TestConnection', array('request'));
+
+        $this->setExpectedException('\Exception');
+
+        /** @var \YouTrack\Connection $youtrack */
+        $youtrack->createAttachment('TEST-123', '/non/existing/file.txt');
+    }
 }
